@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pension Calculation System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --success: #06d6a0; /* Original success color, though btn-success now uses primary theme */
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --light-gray: #e9ecef;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e7f1 100%);
+      color: var(--dark);
+      line-height: 1.6;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px 0;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .logo {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--box-shadow);
+    }
+
+    .logo i {
+      font-size: 28px;
+      color: white;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: var(--primary-dark);
+      margin-bottom: 5px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: var(--gray);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 25px;
+      margin-bottom: 30px;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--light-gray);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background: #f0f0f0;
+      color: var(--dark);
+      text-align: center;
+      padding: 12px 15px;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      border: 1px solid #ddd;
+    }
+
+    th:first-child {
+      border-top-left-radius: var(--border-radius);
+    }
+
+    th:last-child {
+      border-top-right-radius: var(--border-radius);
+    }
+
+    td {
+      border: 1px solid var(--light-gray);
+      padding: 10px 12px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    tr:nth-child(even) {
+      background-color: #fafbff;
+    }
+
+    tr:hover td {
+      background-color: #edf2ff;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+
+    .rowTotal {
+      font-weight: bold;
+      background-color: white !important;
+      color: #000000 !important;
+    }
+
+    .column-total {
+      font-weight: bold;
+      background-color: white !important;
+      color: #000000 !important;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 8px rgba(67, 97, 238, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(to right, var(--primary-dark), #2a44c2);
+      box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* btn-success is now styled like btn-primary for consistency */
+    .btn-success {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 8px rgba(67, 97, 238, 0.25);
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(to right, var(--primary-dark), #2a44c2);
+      box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* btn-outline is now also styled like btn-primary for consistency as requested */
+    .btn-outline {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 8px rgba(67, 97, 238, 0.25);
+    }
+
+    .btn-outline:hover {
+      background: linear-gradient(to right, var(--primary-dark), #2a44c2);
+      box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .output-section {
+      margin-top: 30px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .summary-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--box-shadow);
+      border-top: 4px solid var(--primary);
+    }
+
+    .summary-card h3 {
+      font-size: 1.1rem;
+      color: var(--gray);
+      margin-bottom: 10px;
+    }
+
+    .summary-card .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .amount-in-words {
+      margin: 25px 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8f4f8 100%);
+      border-radius: var(--border-radius);
+      border-left: 4px solid var(--primary);
+    }
+
+    .words-container h3 {
+      color: var(--primary-dark);
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .words-display {
+      background: white;
+      padding: 15px 20px;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--dark);
+      text-transform: capitalize;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e0e7ff;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--gray);
+      font-size: 0.9rem;
+      padding: 20px 0;
+    }
+
+    @media (max-width: 768px) {
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <div class="logo">
+          <i class="fas fa-table"></i>
+        </div>
+        <h1>Pension Calculation System</h1>
+      </div>
+      <p class="subtitle">Enter financial data with real-time calculations</p>
+    </header>
+
+    <main>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Wing Financial Data</h2>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="addRow()">
+              <i class="fas fa-plus"></i> Add Row
+            </button>
+          </div>
+        </div>
+        
+        <div class="table-container">
+          <table id="dataTable">
+            <thead>
+              <tr>
+                <th>Wing</th>
+                <th>No. of Pensioners</th>
+                <th>Monthly Pension</th>
+                <th>Orderly Allow.</th>
+                <th>CMA</th>
+                <th>Arrears</th>
+                <th>Free Supply</th>
+                <th>Medical Charges</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr>
+                <td><input type="text" placeholder="Enter Wing"></td>
+                <td><input type="number" class="pensioners" placeholder="0" min="0"></td>
+                <td><input type="number" class="val" placeholder="0" min="0"></td>
+                <td><input type="number" class="val" placeholder="0" min="0"></td>
+                <td><input type="number" class="val" placeholder="0" min="0"></td>
+                <td><input type="number" class="val" placeholder="0" min="0"></td>
+                <td><input type="number" class="val" placeholder="0" min="0"></td>
+                <td><input type="number" class="val" placeholder="0" min="0"></td>
+                <td class="rowTotal">0</td>
+              </tr>
+            </tbody>
+            <tfoot id="tableFooter">
+              <tr>
+                <td><strong>Total</strong></td>
+                <td class="column-total" id="totalPensioners">0</td>
+                <td class="column-total" id="totalMonthlyPension">0</td>
+                <td class="column-total" id="totalOrderlyAllow">0</td>
+                <td class="column-total" id="totalCMA">0</td>
+                <td class="column-total" id="totalArrears">0</td>
+                <td class="column-total" id="totalFreeSupply">0</td>
+                <td class="column-total" id="totalMedicalCharges">0</td>
+                <td class="column-total" id="grandTotal">0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        
+        <div class="amount-in-words">
+          <div class="words-container">
+            <h3><i class="fas fa-spell-check"></i> Amount in Words</h3>
+            <div class="words-display" id="amountInWords">
+              Zero rupees only
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <!-- Removed the "Calculate Totals" button as requested -->
+          <button class="btn btn-success" onclick="exportToWord()">
+            <i class="fas fa-download"></i> Export to Word
+          </button>
+          <button class="btn btn-outline" onclick="resetForm()"> <!-- Changed class to btn-outline for reset button -->
+            <i class="fas fa-sync-alt"></i> Reset Form
+          </button>
+        </div>
+      </div>
+      
+      <div class="output-section">
+        <h2 class="card-title">Summary Report</h2>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <h3>Total Wings</h3>
+            <div class="value" id="summaryWings">1</div>
+          </div>
+          <div class="summary-card">
+            <h3>Total Pensioners</h3>
+            <div class="value" id="summaryPensioners">0</div>
+          </div>
+          <div class="summary-card">
+            <h3>Grand Total</h3>
+            <div class="value" id="summaryGrandTotal">Rs. 0</div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>I.T Department WAPDA Pension Directorate. Copy rights reserved </p>
+    </footer>
+  </div>
+
+  <script>
+    // Function to convert number to words
+    function numberToWords(num) {
+      if (num === 0) return "zero";
+      
+      const ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+      const teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+      const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+      const thousands = ["", "thousand", "million", "billion", "trillion"];
+      
+      function convertHundreds(n) {
+        let result = "";
+        
+        if (n >= 100) {
+          result += ones[Math.floor(n / 100)] + " hundred ";
+          n %= 100;
+        }
+        
+        if (n >= 20) {
+          result += tens[Math.floor(n / 10)] + " ";
+          n %= 10;
+        } else if (n >= 10) {
+          result += teens[n - 10] + " ";
+          return result.trim();
+        }
+        
+        if (n > 0) {
+          result += ones[n] + " ";
+        }
+        
+        return result.trim();
+      }
+      
+      if (num < 0) return "negative " + numberToWords(-num);
+      
+      let result = "";
+      let thousandCounter = 0;
+      
+      while (num > 0) {
+        if (num % 1000 !== 0) {
+          result = convertHundreds(num % 1000) + " " + thousands[thousandCounter] + " " + result;
+        }
+        num = Math.floor(num / 1000);
+        thousandCounter++;
+      }
+      
+      return result.trim();
+    }
+
+    function updateAmountInWords(amount) {
+      const amountInWords = document.getElementById('amountInWords');
+      if (amount <= 0) {
+        amountInWords.textContent = "Zero rupees only";
+      } else {
+        const words = numberToWords(Math.floor(amount));
+        amountInWords.textContent = words.charAt(0).toUpperCase() + words.slice(1) + " rupees only";
+      }
+    }
+
+    // Function to format numbers with commas, handling decimals conditionally
+    function formatCurrency(amount) {
+      const num = parseFloat(amount);
+      if (isNaN(num)) return '0';
+
+      // Using toLocaleString with options for comma separation and conditional decimals
+      return num.toLocaleString('en-US', {
+        minimumFractionDigits: 0, // Show no decimal places for whole numbers
+        maximumFractionDigits: 2  // Show up to two decimal places if they exist
+      });
+    }
+
+    // Function to parse currency text back to number (removed "Rs. " prefix handling)
+    function parseCurrency(currencyText) {
+      return parseFloat(currencyText.replace(/[,]/g, '')) || 0;
+    }
+
+    function addRow() {
+      const tableBody = document.getElementById('tableBody');
+      const newRow = document.createElement('tr');
+      
+      newRow.innerHTML = `
+        <td><input type="text" placeholder="Enter Wing"></td>
+        <td><input type="number" class="pensioners" placeholder="0" min="0"></td>
+        <td><input type="number" class="val" placeholder="0" min="0"></td>
+        <td><input type="number" class="val" placeholder="0" min="0"></td>
+        <td><input type="number" class="val" placeholder="0" min="0"></td>
+        <td><input type="number" class="val" placeholder="0" min="0"></td>
+        <td><input type="number" class="val" placeholder="0" min="0"></td>
+        <td><input type="number" class="val" placeholder="0" min="0"></td>
+        <td class="rowTotal">0</td>
+      `;
+      
+      tableBody.appendChild(newRow);
+      
+      // Add event listeners to new inputs
+      const inputs = newRow.querySelectorAll('.val, .pensioners');
+      inputs.forEach(input => {
+        input.addEventListener('input', updateRowTotal);
+      });
+      
+      updateSummary();
+    }
+    
+    function updateRowTotal() {
+      const row = this.closest('tr');
+      const inputs = row.querySelectorAll('.val');
+      let sum = 0;
+      
+      inputs.forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        sum += value;
+      });
+      
+      row.querySelector('.rowTotal').textContent = formatCurrency(sum);
+      updateColumnTotals();
+      updateSummary();
+    }
+    
+    // The calculateTotals function is no longer explicitly called by a button,
+    // as updates are handled by input change events. Keeping it for completeness
+    // or if manual recalculation logic is needed elsewhere.
+    function calculateTotals() {
+      const rows = document.querySelectorAll('#tableBody tr');
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll('.val');
+        let sum = 0;
+        
+        inputs.forEach(input => {
+          const value = parseFloat(input.value) || 0;
+          sum += value;
+        });
+        
+        row.querySelector('.rowTotal').textContent = formatCurrency(sum);
+      });
+      
+      updateColumnTotals();
+      updateSummary();
+    }
+    
+    function updateColumnTotals() {
+      const rows = document.querySelectorAll('#tableBody tr');
+      
+      // Initialize totals
+      let totalPensioners = 0;
+      let totalMonthlyPension = 0;
+      let totalOrderlyAllow = 0;
+      let totalCMA = 0;
+      let totalArrears = 0;
+      let totalFreeSupply = 0;
+      let totalMedicalCharges = 0;
+      let grandTotal = 0;
+      
+      // Calculate column totals
+      rows.forEach(row => {
+        totalPensioners += parseFloat(row.querySelector('.pensioners').value) || 0;
+        // The nth-child selectors need to be precise for the inputs
+        totalMonthlyPension += parseFloat(row.querySelector('td:nth-child(3) input').value) || 0;
+        totalOrderlyAllow += parseFloat(row.querySelector('td:nth-child(4) input').value) || 0;
+        totalCMA += parseFloat(row.querySelector('td:nth-child(5) input').value) || 0;
+        totalArrears += parseFloat(row.querySelector('td:nth-child(6) input').value) || 0;
+        totalFreeSupply += parseFloat(row.querySelector('td:nth-child(7) input').value) || 0;
+        totalMedicalCharges += parseFloat(row.querySelector('td:nth-child(8) input').value) || 0;
+        
+        // Calculate grand total by summing all financial values for this row
+        const rowValues = row.querySelectorAll('.val');
+        let rowSum = 0;
+        rowValues.forEach(input => {
+          rowSum += parseFloat(input.value) || 0;
+        });
+        grandTotal += rowSum;
+      });
+      
+      // Update footer totals (removed "Rs. " prefix)
+      document.getElementById('totalPensioners').textContent = totalPensioners;
+      document.getElementById('totalMonthlyPension').textContent = formatCurrency(totalMonthlyPension);
+      document.getElementById('totalOrderlyAllow').textContent = formatCurrency(totalOrderlyAllow);
+      document.getElementById('totalCMA').textContent = formatCurrency(totalCMA);
+      document.getElementById('totalArrears').textContent = formatCurrency(totalArrears);
+      document.getElementById('totalFreeSupply').textContent = formatCurrency(totalFreeSupply);
+      document.getElementById('totalMedicalCharges').textContent = formatCurrency(totalMedicalCharges);
+      document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
+      
+      // Update amount in words
+      updateAmountInWords(grandTotal);
+    }
+    
+    function updateSummary() {
+      const rows = document.querySelectorAll('#tableBody tr');
+      let totalPensioners = 0;
+      let grandTotal = 0;
+      
+      rows.forEach(row => {
+        const pensioners = parseFloat(row.querySelector('.pensioners').value) || 0;
+        totalPensioners += pensioners;
+        
+        // Calculate row total by summing all financial values
+        const rowValues = row.querySelectorAll('.val');
+        let rowSum = 0;
+        rowValues.forEach(input => {
+          rowSum += parseFloat(input.value) || 0;
+        });
+        grandTotal += rowSum;
+      });
+      
+      const wingCount = rows.length;
+      
+      document.getElementById('summaryWings').textContent = wingCount;
+      document.getElementById('summaryPensioners').textContent = totalPensioners;
+      document.getElementById('summaryGrandTotal').textContent = 'Rs. ' + formatCurrency(grandTotal); /* Keep Rs. here for display in summary */
+      
+      // Update amount in words
+      updateAmountInWords(grandTotal);
+    }
+
+    function resetForm() {
+      // Custom confirmation dialog instead of alert() / confirm()
+      const confirmReset = () => {
+        // For demonstration, we'll use a simple window.confirm as a placeholder.
+        // In a real application, you'd implement a custom modal/dialog UI for this.
+        const userConfirmed = window.confirm('Are you sure you want to reset all data?'); 
+        if (userConfirmed) {
+          const tableBody = document.getElementById('tableBody');
+          tableBody.innerHTML = `
+            <tr>
+              <td><input type="text" placeholder="Enter Wing"></td>
+              <td><input type="number" class="pensioners" placeholder="0" min="0"></td>
+              <td><input type="number" class="val" placeholder="0" min="0"></td>
+              <td><input type="number" class="val" placeholder="0" min="0"></td>
+              <td><input type="number" class="val" placeholder="0" min="0"></td>
+              <td><input type="number" class="val" placeholder="0" min="0"></td>
+              <td><input type="number" class="val" placeholder="0" min="0"></td>
+              <td><input type="number" class="val" placeholder="0" min="0"></td>
+              <td class="rowTotal">0</td>
+            </tr>
+          `;
+          
+          // Reset footer totals (removed "Rs. " prefix)
+          document.getElementById('totalPensioners').textContent = '0';
+          document.getElementById('totalMonthlyPension').textContent = '0';
+          document.getElementById('totalOrderlyAllow').textContent = '0';
+          document.getElementById('totalCMA').textContent = '0';
+          document.getElementById('totalArrears').textContent = '0';
+          document.getElementById('totalFreeSupply').textContent = '0';
+          document.getElementById('totalMedicalCharges').textContent = '0';
+          document.getElementById('grandTotal').textContent = '0';
+          
+          // Reset summary (keep "Rs. " for summary display)
+          document.getElementById('summaryWings').textContent = '1';
+          document.getElementById('summaryPensioners').textContent = '0';
+          document.getElementById('summaryGrandTotal').textContent = 'Rs. 0';
+          
+          // Reset amount in words
+          document.getElementById('amountInWords').textContent = 'Zero rupees only';
+          
+          // Reattach event listeners to the single initial row
+          const inputs = document.querySelectorAll('#tableBody tr:first-child .val, #tableBody tr:first-child .pensioners');
+          inputs.forEach(input => {
+            input.addEventListener('input', updateRowTotal);
+          });
+        }
+      };
+
+      confirmReset(); // Call the custom confirmation
+    }
+
+    function exportToWord() {
+      // Get the current date for the filename
+      const today = new Date();
+      const dateString = today.toISOString().split('T')[0];
+      
+      // Get the current amount in words
+      const currentAmountInWords = document.getElementById('amountInWords').textContent;
+      
+      // Create HTML content for the Word document
+      let htmlContent = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="UTF-8">
+          <title>Pension Data Export</title>
+          <style>
+            @page {
+              size: A4;
+              margin: 1in;
+            }
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0; 
+              padding: 0;
+              font-size: 11pt;
+            }
+            h1 { 
+              color: #333; 
+              text-align: center; 
+              margin-bottom: 20px; 
+              font-size: 16pt;
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-top: 20px; 
+              font-size: 9pt; /* Keep table font size for cells at 9pt */
+              table-layout: fixed;
+            }
+            th { 
+              background-color: #f0f0f0; 
+              color: #333; 
+              padding: 6px 4px; 
+              text-align: center; 
+              border: 1px solid #333;
+              font-weight: bold;
+              font-size: 8pt; /* Keep header font size at 8pt for compactness */
+            }
+            td { 
+              border: 1px solid #333; 
+              padding: 4px 3px; 
+              text-align: center;
+              word-wrap: break-word;
+              font-size: 9pt; /* Adjusted table cell font size slightly to help fit content */
+            }
+            .total-row { 
+              font-weight: bold; 
+              background-color: white; /* Changed from yellow to white for Word export */
+              color: #000000;
+            }
+            /* Removed .summary styles as summary is no longer exported */
+            .amount-in-words-section-export { /* New class for Word export styling */
+              margin-top: 20px;
+              padding: 10px;
+              font-weight: 600;
+              font-size: 11pt;
+              color: #000;
+              text-transform: capitalize;
+            }
+            /* Adjusted Column widths for better fitting of 'Rs.' prefix */
+            th:nth-child(1), td:nth-child(1) { width: 10%; } /* Wing */
+            th:nth-child(2), td:nth-child(2) { width: 10%; } /* No. of Pensioners */
+            th:nth-child(3), td:nth-child(3) { width: 11.5%; } /* Monthly Pension */
+            th:nth-child(4), td:nth-child(4) { width: 11.5%; } /* Orderly Allow. */
+            th:nth-child(5), td:nth-child(5) { width: 11.5%; } /* CMA */
+            th:nth-child(6), td:nth-child(6) { width: 11.5%; } /* Arrears */
+            th:nth-child(7), td:nth-child(7) { width: 11.5%; } /* Free Supply */
+            th:nth-child(8), td:nth-child(8) { width: 11.5%; } /* Medical Charges */
+            th:nth-child(9), td:nth-child(9) { width: 11%; } /* Total */
+          </style>
+        </head>
+        <body>
+          <h1>Pension Data Report</h1>
+          <table>
+            <thead>
+              <tr>
+                <th>Wing</th>
+                <th>No. of Pensioners</th>
+                <th>Monthly Pension</th>
+                <th>Orderly Allow.</th>
+                <th>CMA</th>
+                <th>Arrears</th>
+                <th>Free Supply</th>
+                <th>Medical Charges</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      // Add table rows
+      const rows = document.querySelectorAll('#tableBody tr');
+      let grandTotal = 0;
+      let totalPensioners = 0;
+      
+      rows.forEach(row => {
+        const wing = row.querySelector('td:first-child input').value || 'N/A';
+        const pensioners = row.querySelector('.pensioners').value || '0';
+        const monthlyPension = row.querySelector('td:nth-child(3) input').value || '0';
+        const orderlyAllow = row.querySelector('td:nth-child(4) input').value || '0';
+        const cma = row.querySelector('td:nth-child(5) input').value || '0';
+        const arrears = row.querySelector('td:nth-child(6) input').value || '0';
+        const freeSupply = row.querySelector('td:nth-child(7) input').value || '0';
+        const medicalCharges = row.querySelector('td:nth-child(8) input').value || '0';
+        
+        // Calculate row total
+        const rowTotal = parseFloat(monthlyPension) + parseFloat(orderlyAllow) + parseFloat(cma) + 
+                         parseFloat(arrears) + parseFloat(freeSupply) + parseFloat(medicalCharges);
+        
+        htmlContent += `
+          <tr>
+            <td>${wing}</td>
+            <td>${pensioners}</td>
+            <td>${formatCurrency(monthlyPension)}</td>
+            <td>${formatCurrency(orderlyAllow)}</td>
+            <td>${formatCurrency(cma)}</td>
+            <td>${formatCurrency(arrears)}</td>
+            <td>${formatCurrency(freeSupply)}</td>
+            <td>${formatCurrency(medicalCharges)}</td>
+            <td>${formatCurrency(rowTotal)}</td>
+          </tr>
+        `;
+        
+        grandTotal += rowTotal;
+        totalPensioners += parseFloat(pensioners) || 0;
+      });
+
+      // Add footer row with totals
+      htmlContent += `
+          <tr class="total-row">
+            <td><strong>Total</strong></td>
+            <td>${document.getElementById('totalPensioners').textContent}</td>
+            <td>${formatCurrency(parseCurrency(document.getElementById('totalMonthlyPension').textContent))}</td>
+            <td>${formatCurrency(parseCurrency(document.getElementById('totalOrderlyAllow').textContent))}</td>
+            <td>${formatCurrency(parseCurrency(document.getElementById('totalCMA').textContent))}</td>
+            <td>${formatCurrency(parseCurrency(document.getElementById('totalArrears').textContent))}</td>
+            <td>${formatCurrency(parseCurrency(document.getElementById('totalFreeSupply').textContent))}</td>
+            <td>${formatCurrency(parseCurrency(document.getElementById('totalMedicalCharges').textContent))}</td>
+            <td>${formatCurrency(parseCurrency(document.getElementById('grandTotal').textContent))}</td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- Updated Amount in Words section for Word export: removed labels, show as simple text -->
+      <p class="amount-in-words-section-export">
+        Amount in Words: ${currentAmountInWords}
+      </p>
+      <!-- Removed Summary Report section from Word export -->
+    </body>
+    </html>
+      `;
+
+      // Create Blob and download
+      const blob = new Blob(['\ufeff', htmlContent], {
+        type: 'application/msword'
+      });
+      
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Pension_Data_${dateString}.doc`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    
+    // Initialize event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = document.querySelectorAll('.val, .pensioners');
+      inputs.forEach(input => {
+        input.addEventListener('input', updateRowTotal);
+      });
+      
+      // Perform initial calculation and summary update
+      calculateTotals(); // Call calculateTotals once on load to ensure footer is populated
+      updateSummary();
+    });
+  </script>
+</body>
+</html>
